@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<ruleset name="My first PHPMD rule set"
+         xmlns="http://pmd.sf.net/ruleset/1.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0
+                     http://pmd.sf.net/ruleset_xml_schema.xsd"
+         xsi:noNamespaceSchemaLocation="
+                     http://pmd.sf.net/ruleset_xml_schema.xsd">
+    <description>
+        Custom rule set that checks my code...
+    </description>
+
+<!--    示例：https://github.com/phpmd/phpmd/blob/ce10831d4ddc2686c1348a98069771dd314534a8/src/test/resources/files/rulesets/exclude-pattern.xml-->
+    <description>Test exclude-pattern</description>
+    <rule ref="rulesets/codesize.xml">
+        <exclude name="NPathComplexity" />
+    </rule>
+<!--  控制 NPathComplexity 最低限制，暂时不启用 -->
+<!--    <rule ref="rulesets/codesize.xml/NPathComplexity">-->
+<!--        <properties>-->
+<!--            <property name="minimum" value="111" />-->
+<!--        </properties>-->
+<!--    </rule>-->
+
+    <!-- Import entire clean code rule set, modify StaticAccess rule -->
+    <rule ref="rulesets/design.xml" />
+    <rule ref="rulesets/controversial.xml" />
+    <rule ref="rulesets/unusedcode.xml" />
+
+    <!-- Import entire naming rule set and exclude rules -->
+    <rule ref="rulesets/naming.xml">
+        <exclude name="ShortVariable" />
+        <exclude name="ShortMethodName" />
+    </rule>
+
+<!--   忽略部分 laravel 下自带的方法名 -->
+    <rule ref="rulesets/naming.xml/ShortMethodName">
+        <properties>
+            <property name="exceptions">
+                <value>up,down</value>
+            </property>
+        </properties>
+    </rule>
+
+    <rule ref="rulesets/cleancode.xml">
+        <exclude name="StaticAccess" />
+        <exclude name="ElseExpression" />
+    </rule>
+
+
+</ruleset>
