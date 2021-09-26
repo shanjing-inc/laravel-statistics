@@ -1,0 +1,23 @@
+{
+    "name": "shanjing\/laravel-statistics",
+    "description": "A laravel statistics library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "loumzy",
+            "email": "lou@shanjing-inc.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Shanjing\\LaravelStatistics\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Shanjing\\LaravelStatistics\\StatisticsServiceProvider"
+            ]
+        }
+    }
+}
