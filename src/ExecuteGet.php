@@ -268,7 +268,7 @@ class ExecuteGet
         // 遍历日期，补足不存在的日期
         foreach ($unabridgedDates as $unabridgedDate) {
             if ($dataCursor < sizeof($data) && $unabridgedDate === $data[$dataCursor]->$period) {
-                $dataFilledMissedData[] = $data[$dataCursor];
+                $dataFilledMissedData[] = $data[$dataCursor]->getAttributes();
                 $dataCursor++;
             } else {
                 $dataFilledMissedData[] = array_merge([
