@@ -3,7 +3,6 @@
 namespace Shanjing\LaravelStatistics;
 
 use Exception;
-use Illuminate\Support\Facades\DB;
 use Shanjing\LaravelStatistics\Helper\DateUtils;
 use Shanjing\LaravelStatistics\Models\StatisticsModel;
 
@@ -230,14 +229,14 @@ class ExecuteGet
      *
      * @param $data - 待处理的数据
      * @param $period - 周期 day | week | month | quarter | year
-     * @param array $occurredBetween - 时间范围 如 【20210901， 20210930】
+     * @param $occurredBetween - 时间范围 如 【20210901， 20210930】
      * @param $orderBy - 排序方式 desc | asc
      * @param $items - 请求数据的 key，如 gmv | order_num, 用来说明哪些 item 需要补充 0
      * @return array
      *
      * @author lou <lou@shanjing-inc.com>
      */
-    private function fillMissedDateWithZeroValue($data, $period, array $occurredBetween, $orderBy, $items)
+    private function fillMissedDateWithZeroValue($data, $period, $occurredBetween, $orderBy, $items)
     {
         switch ($period) {
             case strval('year'):

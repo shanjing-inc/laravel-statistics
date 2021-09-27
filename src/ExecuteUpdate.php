@@ -3,7 +3,6 @@
 namespace Shanjing\LaravelStatistics;
 
 use Exception;
-use Illuminate\Support\Facades\DB;
 use Shanjing\LaravelStatistics\Models\StatisticsModel;
 
 class ExecuteUpdate

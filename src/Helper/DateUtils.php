@@ -21,7 +21,7 @@ class DateUtils
      * @author lou <lou@shanjing-inc.com>
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
-    public static function getUnabridgedYears(array $timeRange, $orderBy)
+    public static function getUnabridgedYears(array $timeRange = null, $orderBy = 'desc')
     {
         $years = [];
         // 获取时间范围
@@ -77,7 +77,7 @@ class DateUtils
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
 
-    public static function getUnabridgedQuarter(array $timeRange, $orderBy)
+    public static function getUnabridgedQuarter(array $timeRange = null, $orderBy = 'desc')
     {
         $quarters = [];
         // 获取时间范围
@@ -144,7 +144,7 @@ class DateUtils
      * @author lou <lou@shanjing-inc.com>
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
-    public static function getUnabridgedMonths(array $timeRange, $orderBy)
+    public static function getUnabridgedMonths(array $timeRange = null, $orderBy = 'desc')
     {
         $months = [];
         // 获取时间范围
@@ -200,7 +200,7 @@ class DateUtils
      * @author lou <lou@shanjing-inc.com>
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
-    public static function getUnabridgedWeeks(array $timeRange, $orderBy)
+    public static function getUnabridgedWeeks(array $timeRange = null, $orderBy = 'desc')
     {
         $weeks = [];
         // 获取时间范围
@@ -255,7 +255,7 @@ class DateUtils
      *
      * @author lou <lou@shanjing-inc.com>
      */
-    public static function getUnabridgedDays(array $timeRange, $orderBy)
+    public static function getUnabridgedDays(array $timeRange = null, $orderBy = 'desc')
     {
         $days = [];
         // 获取时间范围
