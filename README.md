@@ -73,7 +73,7 @@ app('statistics')
 
 // 20210901~20210921 淘宝销量、销售额
 app('statistics')
-->getData("taobao", ['gmv', 'order_num'])
+->get("taobao", ['gmv', 'order_num'])
 ->occurredBetween([20210901, 20210921])
 ->period('day')
 ->orderBy("desc") 
