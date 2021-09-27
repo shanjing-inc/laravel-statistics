@@ -47,12 +47,12 @@ class InstallCommand extends Command
      */
     public function initDatabase()
     {
-        $this->call('migrate');
-
-        $statisticsModel = config('statistics.database.statistics_model');
-
-        if ($statisticsModel::count() == 0) {
-            $this->call('db:seed', ['--class' => StatisticsTablesSeeder::class]);
-        }
+        $this->call(
+            'migrate',
+            array(
+                '--path' => 'database/migrations/2021_09_22_083561_create_statistics_table.php',
+                '--database' => config('statistics.database.connection') ?: config('database.default'),
+                '--force' => true)
+        );
     }
 }

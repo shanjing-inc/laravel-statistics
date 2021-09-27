@@ -130,6 +130,7 @@ class DateUtils
                 }
             }
         }
+
         return $quarters;
     }
 
