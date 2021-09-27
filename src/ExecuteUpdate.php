@@ -3,7 +3,7 @@
 namespace Shanjing\LaravelStatistics;
 
 use Exception;
-use Illuminate\Support\Facades\DB;
+use Shanjing\LaravelStatistics\Models\StatisticsModel;
 
 class ExecuteUpdate
 {
@@ -25,21 +25,18 @@ class ExecuteUpdate
 
     public function exec()
     {
-        $model = DB::table(config('statistics.database.statistics_table'))
-            ->whereRaw($this->getWhereRaw())
+        $model = StatisticsModel::whereRaw($this->getWhereRaw())
             ->first();
 
         if (null != $model) {
-            return DB::table(config('statistics.database.statistics_table'))
-                ->orderBy('id', 'desc')
+            return StatisticsModel::orderBy('id', 'desc')
                 ->where('id', $model->id)
                 ->update(array_merge(
                     $this->getFormatedData($this->data),
                     ['updated_at' => now()]
                 ));
         } else {
-            return DB::table(config('statistics.database.statistics_table'))
-                ->orderBy('id', 'desc')
+            return StatisticsModel::orderBy('id', 'desc')
                 ->insert([
                    'data'  => json_encode($this->data),
                     'key'  => $this->key,
