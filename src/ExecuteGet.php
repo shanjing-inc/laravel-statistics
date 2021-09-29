@@ -233,7 +233,7 @@ class ExecuteGet
      * @param $orderBy - 排序方式 desc | asc
      * @param $items - 请求数据的 key，如 gmv | order_num, 用来说明哪些 item 需要补充 0
      * @return array
-     *
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @author lou <lou@shanjing-inc.com>
      */
     private function fillMissedDateWithZeroValue($data, $period, $occurredBetween, $orderBy, $items)
@@ -268,7 +268,15 @@ class ExecuteGet
         // 遍历日期，补足不存在的日期
         foreach ($unabridgedDates as $unabridgedDate) {
             if ($dataCursor < sizeof($data) && $unabridgedDate === $data[$dataCursor]->$period) {
-                $dataFilledMissedData[] = $data[$dataCursor]->getAttributes();
+                $nonNullAttribute = (object)[];
+                foreach ($data[$dataCursor]->getAttributes() as $key => $value) {
+                    if ($value) {
+                        $nonNullAttribute->$key = $value;
+                    } else {
+                        $nonNullAttribute->$key = 0;
+                    }
+                }
+                $dataFilledMissedData[] = $nonNullAttribute;
                 $dataCursor++;
             } else {
                 $dataFilledMissedData[] = array_merge([
