@@ -29,6 +29,8 @@ class CreateStatisticsTable extends Migration
             $table->json('data');
             $table->dateTime('occurred_at');
             $table->timestamps();
+
+            $table->index('occurred_at', 'occurred_at');
         });
     }
 

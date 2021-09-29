@@ -32,7 +32,7 @@ class ExecuteUpdate
             return StatisticsModel::orderBy('id', 'desc')
                 ->where('id', $model->id)
                 ->update(array_merge(
-                    $this->getFormatedData($this->data),
+                    $this->getFormattedData($this->data),
                     ['updated_at' => now()]
                 ));
         } else {
@@ -59,7 +59,7 @@ class ExecuteUpdate
      */
     private function getWhereRaw()
     {
-        return $this->getFormatedWhereOccurredAt($this->occurredAt) . " AND `key`='$this->key'";
+        return $this->getFormattedWhereOccurredAt($this->occurredAt) . " AND `key`='$this->key'";
     }
 
 
@@ -71,10 +71,10 @@ class ExecuteUpdate
      *
      * @author lou <lou@shanjing-inc.com>
      */
-    private function getFormatedWhereOccurredAt($occurredAt)
+    private function getFormattedWhereOccurredAt($occurredAt)
     {
         if (null == $occurredAt) {
-            return"'" . date('Ymd') . "'";
+            return"`occurred_at` = '" . date('Ymd') . "'";
         }
 
         return "`occurred_at` = '$occurredAt'";
@@ -89,7 +89,7 @@ class ExecuteUpdate
      *
      * @author lou <lou@shanjing-inc.com>
      */
-    private function getFormatedData($data)
+    private function getFormattedData($data)
     {
         if ($data == null || sizeof($data) == 0) {
             throw new Exception('There is no data to save!');
@@ -99,7 +99,7 @@ class ExecuteUpdate
     }
 
     /**
-     * Flatten a multi-dimensional associative array with dots.
+     * Flatten a multi-dimensional associative array with arrow (->).
      *
      * @param  iterable  $array
      * @param  string  $prepend
