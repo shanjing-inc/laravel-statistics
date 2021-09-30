@@ -12,7 +12,7 @@
 ### 环境
 - PHP > 7.4
 - Laravel 8.*
-- MySQL 8.*  
+- MySQL 8.*
 
 
 ### 安装
@@ -49,9 +49,19 @@ $ composer require shanjing/laravel-statistics -vvv
 php artisan laravel-statistics:publish
 ```
 
-在该命令会生成配置文件`config/statistics.php`，可以在里面修改 数据库连接、以及表名，建议都是用默认配置不修改。
+在该命令会生成配置文件`config/statistics.php`，可以在里面修改数据库连接、以及表名，建议都是用默认配置不修改。
+```
 
+// 指定数据库链接.
+'connection' => '',
+
+// 指定表名，如果后期修改数据库表名，这里也需要修改成对应的表名.
+'statistics_table' => 'laravel_statistics',
+```
 然后运行下面的命令完成安装：
+- 注意： 由于运行安装是针对具体的迁移文件运行的， 迁移文件名不可以修改。
+    - 文件："2021_09_22_083561_create_statistics_table.php"，
+    - 目录：项目目录/database/migrations/
 
 ```bash
 php artisan laravel-statistics:install
@@ -59,6 +69,8 @@ php artisan laravel-statistics:install
 
 ### 使用
 上述步骤操作完成之后就可以使用统计功能了
+
+- 使用统计表统计数据和读取数据
 
 读取数据
 ```php
@@ -83,6 +95,9 @@ app('statistics')
 存储数据
 ```php
 // 更新数据
+// $arr： 会已 json 的格式存储在 data 列
+// taobao： 存储在 key 列
+// occurredAt: 存储在 occurred_at 列
 $arr = ['gmv'=>'value', 'order_num'=>'value'];
 app('statistics')
 ->save("taobao", $arr)
@@ -90,6 +105,38 @@ app('statistics')
 ->exec();
 ```
 
+- 使用已有的 model 展示实时数据
+
+1）向需要统计功能的 model 引入 statistics 模块
+```php
+<?php
+  
+namespace App\Models\Order;
+  
+use Illuminate\Database\Eloquent\Model;
+use Shanjing\LaravelStatistics\Traits\Statistics;
+  
+class Order extends Model
+{ 
+    use Statistics;
+  
+    protected $table = '';
+  
+    protected $connection = '';
+}
+```
+2）在调用的 controller 里，调用
+```php
+// period   year | month | week | day
+// occurredBetween 时间范围
+// orderBy  desc | asc
+Order::period("day")
+   ->occurredBetween(["20210718", "20210921"])
+   ->selectRaw('count(id) as total') // 支持 select 语句
+   ->selectRaw('SUM(`price`) as gmv') // 支持 select 语句
+   ->orderBy('desc')
+   ->summary();
+```
 ### Contributors
 
 This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
