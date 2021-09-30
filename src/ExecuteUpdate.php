@@ -3,6 +3,7 @@
 namespace Shanjing\LaravelStatistics;
 
 use Exception;
+use Shanjing\LaravelStatistics\Helper\ArrayHelper;
 use Shanjing\LaravelStatistics\Models\StatisticsModel;
 
 class ExecuteUpdate
@@ -19,7 +20,15 @@ class ExecuteUpdate
 
     public function occurredAt(string $occurredAt)
     {
-        $this->occurredAt = $occurredAt;
+        if (!empty($occurredAt)) {
+            // 是否是合法的时间
+            $occurredAtTimeStamp = strtotime($occurredAt);
+            if (!ctype_digit($occurredAtTimeStamp)) {
+                throw new Exception("occurredAt 必须是合法的时间, 例如 '20210901'");
+            }
+            $this->occurredAt = $occurredAt;
+        }
+
         return $this;
     }
 
@@ -29,15 +38,13 @@ class ExecuteUpdate
             ->first();
 
         if (null != $model) {
-            return StatisticsModel::orderBy('id', 'desc')
-                ->where('id', $model->id)
+            return StatisticsModel::where('id', $model->id)
                 ->update(array_merge(
                     $this->getFormattedData($this->data),
                     ['updated_at' => now()]
                 ));
         } else {
-            return StatisticsModel::orderBy('id', 'desc')
-                ->insert([
+            return StatisticsModel::insert([
                    'data'  => json_encode($this->data),
                     'key'  => $this->key,
                     'occurred_at' => $this->occurredAt,
@@ -62,7 +69,6 @@ class ExecuteUpdate
         return $this->getFormattedWhereOccurredAt($this->occurredAt) . " AND `key`='$this->key'";
     }
 
-
     /**
      * 获取格式化的时间条件
      *
@@ -80,7 +86,6 @@ class ExecuteUpdate
         return "`occurred_at` = '$occurredAt'";
     }
 
-
     /**
      * 将要更新的字段格式化
      *
@@ -95,28 +100,6 @@ class ExecuteUpdate
             throw new Exception('There is no data to save!');
         }
 
-        return $this->arrow(['data' => $data]);
-    }
-
-    /**
-     * Flatten a multi-dimensional associative array with arrow (->).
-     *
-     * @param  iterable  $array
-     * @param  string  $prepend
-     * @return array
-     */
-    public static function arrow($array, $prepend = '')
-    {
-        $results = [];
-
-        foreach ($array as $key => $value) {
-            if (is_array($value) && ! empty($value)) {
-                $results = array_merge($results, static::arrow($value, $prepend . $key . '->'));
-            } else {
-                $results[$prepend . $key] = $value;
-            }
-        }
-
-        return $results;
+        return ArrayHelper::arrow(['data' => $data]);
     }
 }
