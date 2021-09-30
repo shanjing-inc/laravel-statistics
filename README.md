@@ -49,9 +49,19 @@ $ composer require shanjing/laravel-statistics -vvv
 php artisan laravel-statistics:publish
 ```
 
-在该命令会生成配置文件`config/statistics.php`，可以在里面修改 数据库连接、以及表名，建议都是用默认配置不修改。
+在该命令会生成配置文件`config/statistics.php`，可以在里面修改数据库连接、以及表名，建议都是用默认配置不修改。
+```
 
+// 指定数据库链接.
+'connection' => '',
+
+// 指定表名，如果后期修改数据库表名，这里也需要修改成对应的表名.
+'statistics_table' => 'laravel_statistics',
+```
 然后运行下面的命令完成安装：
+- 注意： 由于运行安装是针对具体的迁移文件运行的， 迁移文件名不可以修改。
+  - 文件："2021_09_22_083561_create_statistics_table.php"，
+  - 目录：项目目录/database/migrations/
 
 ```bash
 php artisan laravel-statistics:install
@@ -83,6 +93,9 @@ app('statistics')
 存储数据
 ```php
 // 更新数据
+// $arr： 会已 json 的格式存储在 data 列
+// taobao： 存储在 key 列
+// occurredAt: 存储在 occurred_at 列
 $arr = ['gmv'=>'value', 'order_num'=>'value'];
 app('statistics')
 ->save("taobao", $arr)

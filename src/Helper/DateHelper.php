@@ -3,13 +3,13 @@
 namespace  Shanjing\LaravelStatistics\Helper;
 
 /**
- * Class DateUtils
+ * Class DateHelper
  * @package Shanjing\LaravelStatistics\Helper
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  *
  * @author lou <lou@shanjing-inc.com>
  */
-class DateUtils
+class DateHelper
 {
     /**
      * 处理周期为年的数据填充

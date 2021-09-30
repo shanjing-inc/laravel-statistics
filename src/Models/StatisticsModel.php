@@ -7,7 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class Administrator.
  *
- * @property
+ * @property mixed key
+ * @property mixed data
+ * @property mixed occurred_at
+ *
  */
 class StatisticsModel extends Model
 {
