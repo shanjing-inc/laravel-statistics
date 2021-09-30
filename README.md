@@ -70,6 +70,8 @@ php artisan laravel-statistics:install
 ### 使用
 上述步骤操作完成之后就可以使用统计功能了
 
+- 使用统计表统计数据和读取数据
+
 读取数据
 ```php
 // 今天淘宝销量、销售额
@@ -103,6 +105,38 @@ app('statistics')
 ->exec();
 ```
 
+- 使用已有的 model 展示实时数据
+
+1）向需要统计功能的 model 引入 statistics 模块
+```php
+<?php
+  
+namespace App\Models\Order;
+  
+use Illuminate\Database\Eloquent\Model;
+use Shanjing\LaravelStatistics\Traits\Statistics;
+  
+class Order extends Model
+{ 
+    use Statistics;
+  
+    protected $table = '';
+  
+    protected $connection = '';
+}
+```
+2）在调用的 controller 里，调用
+```php
+// period   year | month | week | day
+// occurredBetween 时间范围
+// orderBy  desc | asc
+Order::period("day")
+   ->occurredBetween(["20210718", "20210921"])
+   ->selectRaw('count(id) as total') // 支持 select 语句
+   ->selectRaw('SUM(`price`) as gmv') // 支持 select 语句
+   ->orderBy('desc')
+   ->summary();
+```
 ### Contributors
 
 This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
