@@ -73,12 +73,37 @@ trait Statistics
             // 按照时间分组。
             $builder->selectRaw($selectFields)->groupBy($period);
 
-            return QueryResultProcessHelper::fillMissedDateAndChangeNullValueWithZero(
-                $builder->get(),
-                $period,
-                $occurredBetween,
-                $orderBy
-            );
+            // 获取 groups
+            $groups = $builder->getQuery()->groups;
+            if (sizeof($groups) > intval(2)) {
+                throw new Exception('can not support to many groupBys, the largest is 2 !');
+            }
+
+            // 获取数据
+            $data = $builder->get();
+
+            // 处理 2 次 groupBy 的情况，形成二维数组
+            if (sizeof($groups) === intval(2)) {
+                if ($groups[1] === $period) {
+                    unset($groups[1]);
+                } else {
+                    unset($groups[0]);
+                }
+                $groupData = $data->groupBy($groups[0]);
+            }
+
+            // 补足确实日期
+            $ret = (object)[];
+            foreach ($groupData as $key => $item) {
+                $processedData = QueryResultProcessHelper::fillMissedDateAndChangeNullValueWithZero(
+                    $item,
+                    $period,
+                    $occurredBetween,
+                    $orderBy
+                );
+                $ret->$key =  $processedData;
+            }
+            return $ret;
         });
 
         return $builder;
