@@ -46,26 +46,15 @@ trait Statistics
             return $builder;
         });
 
-        $builder->macro('orderBy', function (Builder $builder, $orderBy) {
-            $property = static::addPrefix('orderBy');
-            $this->$property = QueryParamCorrectHelper::correctOrderBy($orderBy);
-            return $builder;
-        });
-
         $builder->macro('summary', function (Builder $builder) {
             //获取参数
             $periodKey = static::addPrefix('period');
-            $orderByKey = static::addPrefix('orderBy');
             $occurredBetweenKey = static::addPrefix('occurredBetween');
             $period = $this->$periodKey ?? strval("day");
-            $orderBy = $this->$orderByKey ?? strval("asc");
             $occurredBetween = $this->$occurredBetweenKey ?? []; //
 
             $dateField       = 'created_at';
             $selectFields = QueryParamToSqlHelper::periodToSql($period, $dateField);
-
-            // orderBy
-            $builder->orderBy($orderBy);
 
             // 增加时间段筛选条件。
             $builder->whereRaw(QueryParamToSqlHelper::transformWhere($occurredBetween, null, $dateField));
@@ -73,10 +62,23 @@ trait Statistics
             // 按照时间分组。
             $builder->selectRaw($selectFields)->groupBy($period);
 
+            // 处理排序问题，只支持按照 period 排序
+            $orderBy = 'asc';
+            $orders = $builder->getQuery()->orders;
+            if ($orders == null) {
+                $builder->orderBy($period, $orderBy);
+            } elseif (sizeof($orders) == intval(1)) {
+                if ($orders[0]['column'] != $period) {
+                    throw new Exception('orderBy column error, orderBy column should same as period');
+                }
+            } else {
+                throw new Exception('orderBy column error, too many orderBy');
+            }
+
             // 获取 groups
             $groups = $builder->getQuery()->groups;
             if (sizeof($groups) > intval(2)) {
-                throw new Exception('can not support to many groupBys, the largest is 2 !');
+                throw new Exception('can not support too many groupBys, the largest number is 2 !');
             }
 
             // 获取数据
