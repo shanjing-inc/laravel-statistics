@@ -2,6 +2,7 @@
 
 namespace Shanjing\LaravelStatistics\Helper;
 
+use Carbon\Carbon;
 use Exception;
 
 /**
@@ -71,7 +72,7 @@ class QueryParamCorrectHelper
             if (!ctype_digit($occurredAtTimeStamp)) {
                 throw new Exception("occurredAt 必须是合法的时间, 例如 '20210901'");
             }
-            return [$occurredAt, $occurredAt];
+            return static::makeUpTimeToSecond([$occurredAt, $occurredAt]);
         }
 
         return [];
@@ -98,13 +99,54 @@ class QueryParamCorrectHelper
         }
 
         // 调整时间大小顺序
+        $ret = $occurredBetween;
         if ($startTimeStamp > $endTimeStamp) {
-            return [
+            $ret = [
                 $occurredBetween[1],
                 $occurredBetween[0]
             ];
-        } else {
-            return $occurredBetween;
         }
+
+        return static::makeUpTimeToSecond($ret);
+    }
+
+    /**
+     * 补足日期， 精确到秒
+     *
+     * @param array $occurredBetween
+     * @return array
+     *
+     * @author lou <lou@shanjing-inc.com>
+     */
+    public static function makeUpTimeToSecond(array $occurredBetween)
+    {
+        $ret = $occurredBetween;
+        // 如果时间精确到 「秒」不处理，否则补足到秒[Ymd000000， Ymd235959]
+        // 开始日期
+        if (strlen($ret[0]) == intval(4)) {
+            // 日期到年
+            $ret[0] = $ret[0] . '0101000000';
+        } elseif (strlen($ret[0]) == intval(6)) {
+            // 日期到月
+            $ret[0] = $ret[0] . '01000000';
+        } elseif (strlen($ret[0]) == intval(8)) {
+            // 日期到天
+            $ret[0] = $ret[0] . '000000';
+        }
+
+        // 结束日期
+        if (strlen($ret[1]) == intval(4)) {
+            // 日期到年
+            $ret[1] = $ret[1] . '1231235959';
+        } elseif (strlen($ret[1]) == intval(6)) {
+            // 日期到月
+            $carbon = Carbon::createFromFormat('Ym', $ret[1]);
+            $ret[1] = $ret[1] . $carbon->daysInMonth . '235959';
+        } elseif (strlen($ret[1]) == intval(8)) {
+            // 日期到天
+            $ret[1] = $ret[1] . '235959';
+        }
+
+        return $ret;
     }
 }
