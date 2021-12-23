@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Shanjing\LaravelStatistics\Helper\QueryParamCorrectHelper;
 use Shanjing\LaravelStatistics\Helper\QueryParamToSqlHelper;
 use Shanjing\LaravelStatistics\Helper\QueryResultProcessHelper;
+use Carbon\Carbon;
 
 trait Statistics
 {
@@ -21,6 +22,7 @@ trait Statistics
      * @throws Exception
      *
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      * @author lou <lou@shanjing-inc.com>
      */
     public function newEloquentBuilder($query)
@@ -46,18 +48,33 @@ trait Statistics
             return $builder;
         });
 
+        $builder->macro('dateFieldInfo', function (Builder $builder, $dateFieldInfo) {
+            $property = static::addPrefix('dateFieldInfo');
+            $this->$property = $dateFieldInfo;
+            return $builder;
+        });
+
         $builder->macro('summary', function (Builder $builder) {
             //获取参数
-            $periodKey = static::addPrefix('period');
+            $periodKey          = static::addPrefix('period');
             $occurredBetweenKey = static::addPrefix('occurredBetween');
-            $period = $this->$periodKey ?? strval("day");
-            $occurredBetween = $this->$occurredBetweenKey ?? []; //
+            $dateFieldInfoKey   = static::addPrefix('dateFieldInfo');
+            $period             = $this->$periodKey ?? strval("day");
+            $occurredBetween    = $this->$occurredBetweenKey ?? []; //
+            $dateFieldInfo    = $this->$dateFieldInfoKey ?? ['dateField' => 'created_at', 'dateType' => 'DateTime'];
 
-            $dateField       = 'created_at';
-            $selectFields = QueryParamToSqlHelper::periodToSql($period, $dateField);
+            $dateField          = $dateFieldInfo['dateField'];
+            $selectFields       = QueryParamToSqlHelper::periodToSql($period, $dateField, $dateFieldInfo['dateType']);
 
             // 增加时间段筛选条件。
-            $builder->whereRaw(QueryParamToSqlHelper::transformWhere($occurredBetween, null, $dateField));
+            if ($dateFieldInfo['dateType'] == strval('TimeStamp')) {
+                $builder->whereRaw(QueryParamToSqlHelper::transformWhere([
+                    Carbon::parse($occurredBetween[0])->timestamp,
+                    Carbon::parse($occurredBetween[1])->timestamp
+                ], null, $dateField));
+            } else {
+                $builder->whereRaw(QueryParamToSqlHelper::transformWhere($occurredBetween, null, $dateField));
+            }
 
             // 按照时间分组。
             $builder->selectRaw($selectFields)->groupBy($period);

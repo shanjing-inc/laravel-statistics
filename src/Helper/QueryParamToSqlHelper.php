@@ -66,20 +66,25 @@ class QueryParamToSqlHelper
      *
      * @author lou <lou@shanjing-inc.com>
      */
-    public static function periodToSql($period, $dateColumnKey = 'occurred_at')
+    public static function periodToSql($period, $dateColumnKey = 'occurred_at', $dateColumnType = 'DateTime')
     {
+        $format = 'DATE_FORMAT';
+        if ($dateColumnType === strval('TimeStamp')) {
+            $format = 'FROM_UNIXTIME';
+        }
+
         switch ($period) {
             case strval('year'):
-                return strval('DATE_FORMAT( ' . $dateColumnKey . ', "%Y" )  AS year');
+                return strval($format . '( ' . $dateColumnKey . ', "%Y" )  AS year');
             case strval('quarter'):
-                return strval('concat(DATE_FORMAT(' . $dateColumnKey . ', "%Y"), 
-                floor((DATE_FORMAT(' . $dateColumnKey . ', "-%m")+2)/3)) AS quarter');
+                return strval('concat(' . $format . '(' . $dateColumnKey . ', "%Y"),
+                floor((' . $format . '(' . $dateColumnKey . ', "-%m")+2)/3)) AS quarter');
             case strval('month'):
-                return strval('DATE_FORMAT( ' . $dateColumnKey . ', "%Y-%m" ) AS month');
+                return strval($format . '( ' . $dateColumnKey . ', "%Y-%m" ) AS month');
             case strval('week'):
-                return strval('DATE_FORMAT( ' . $dateColumnKey . ', "%Y-%u" ) AS week');
+                return strval($format . '( ' . $dateColumnKey . ', "%Y-%u" ) AS week');
             default:
-                return strval('DATE_FORMAT( ' . $dateColumnKey . ', "%Y-%m-%d" ) AS day');
+                return strval($format . '( ' . $dateColumnKey . ', "%Y-%m-%d" ) AS day');
         }
     }
 
