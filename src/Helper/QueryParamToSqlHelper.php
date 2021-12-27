@@ -66,11 +66,17 @@ class QueryParamToSqlHelper
      *
      * @author lou <lou@shanjing-inc.com>
      */
-    public static function periodToSql($period, $dateColumnKey = 'occurred_at', $dateColumnType = 'DateTime')
-    {
+    public static function periodToSql(
+        $period,
+        $dateColumnKey = 'occurred_at',
+        $dateColumnType = 'DateTime',
+        $timezone = '+0'
+    ) {
         $format = 'DATE_FORMAT';
         if ($dateColumnType === strval('TimeStamp')) {
             $format = 'FROM_UNIXTIME';
+            $timezoneReview = intval($timezone) * 3600;
+            $dateColumnKey = $dateColumnKey . ' + ' . $timezoneReview;
         }
 
         switch ($period) {

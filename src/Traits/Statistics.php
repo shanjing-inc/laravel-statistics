@@ -61,10 +61,16 @@ trait Statistics
             $dateFieldInfoKey   = static::addPrefix('dateFieldInfo');
             $period             = $this->$periodKey ?? strval("day");
             $occurredBetween    = $this->$occurredBetweenKey ?? []; //
-            $dateFieldInfo    = $this->$dateFieldInfoKey ?? ['dateField' => 'created_at', 'dateType' => 'DateTime'];
+            $dateFieldInfo    = $this->$dateFieldInfoKey
+                ?? ['dateField' => 'created_at', 'dateType' => 'DateTime', 'timezone' => '0'];
 
             $dateField          = $dateFieldInfo['dateField'];
-            $selectFields       = QueryParamToSqlHelper::periodToSql($period, $dateField, $dateFieldInfo['dateType']);
+            $selectFields       = QueryParamToSqlHelper::periodToSql(
+                $period,
+                $dateField,
+                $dateFieldInfo['dateType'],
+                $dateFieldInfo['timezone']
+            );
 
             // 增加时间段筛选条件。
             if ($dateFieldInfo['dateType'] == strval('TimeStamp')) {
