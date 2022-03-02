@@ -115,20 +115,27 @@ trait Statistics
                     unset($groups[0]);
                 }
                 $groupData = $data->groupBy($groups[0]);
+
+                // 补足缺失日期
+                $ret = (object)[];
+                foreach ($groupData as $key => $item) {
+                    $processedData = QueryResultProcessHelper::fillMissedDateAndChangeNullValueWithZero(
+                        $item,
+                        $period,
+                        $occurredBetween,
+                        $orderBy
+                    );
+                    $ret->$key =  $processedData;
+                }
+                return $ret;
             }
 
-            // 补足确实日期
-            $ret = (object)[];
-            foreach ($groupData as $key => $item) {
-                $processedData = QueryResultProcessHelper::fillMissedDateAndChangeNullValueWithZero(
-                    $item,
-                    $period,
-                    $occurredBetween,
-                    $orderBy
-                );
-                $ret->$key =  $processedData;
-            }
-            return $ret;
+            return QueryResultProcessHelper::fillMissedDateAndChangeNullValueWithZero(
+                $data,
+                $period,
+                $occurredBetween,
+                $orderBy
+            );
         });
 
         return $builder;
