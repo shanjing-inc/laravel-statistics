@@ -1,5 +1,5 @@
 {
-    "name": "shanjing\/laravel-statistics",
+    "name": "shanjing/laravel-statistics",
     "description": "A laravel statistics library",
     "license": "MIT",
     "authors": [
@@ -20,6 +20,9 @@
                 "Shanjing\\LaravelStatistics\\StatisticsServiceProvider"
             ]
         }
+    },
+    "require": {
+        "guzzlehttp/psr7": "^2.2.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
