@@ -156,7 +156,7 @@ class DateHelper
                 + date('m', $endTimeStamp) - date('m', $startTimeStamp) + 1;
             if ($orderBy === strval('asc')) {
                 for ($i = 0; $i < $monthGap; $i++) {
-                    $months[] = date('Y-m', strtotime("+" . $i . " month", $startTimeStamp));
+                    $months[] = date('Y-m', strtotime("last day of +" . $i . " month", $startTimeStamp));
                 }
                 // 处理结束节点
                 $endMonth = date('Y-m', $endTimeStamp);
@@ -165,7 +165,7 @@ class DateHelper
                 }
             } else {
                 for ($i = 0; $i < $monthGap; $i++) {
-                    $months[] = date('Y-m', strtotime("-" . $i . " month", $endTimeStamp));
+                    $months[] = date('Y-m', strtotime("last day of -" . $i . " month", $endTimeStamp));
                 }
                 // 处理结束节点
                 $startMonth = date('Y-m', $startTimeStamp);
@@ -178,11 +178,11 @@ class DateHelper
             $maxMonths = 6;
             if ($orderBy === strval('asc')) {
                 for ($i = 1; $i <= $maxMonths; $i++) {
-                    $months[] = date("Y-m", strtotime("-" . ($maxMonths - $i) . "month"));
+                    $months[] = date("Y-m", strtotime("last day of -" . ($maxMonths - $i) . "month"));
                 }
             } else {
                 for ($i = 0; $i < $maxMonths; $i++) {
-                    $months[] = date("Y-m", strtotime("-" . $i . "month"));
+                    $months[] = date("Y-m", strtotime("last day of -" . $i . "month"));
                 }
             }
         }
