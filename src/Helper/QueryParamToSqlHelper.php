@@ -5,7 +5,6 @@ namespace Shanjing\LaravelStatistics\Helper;
 /**
  * 将查询参数格式化成对应的 sql 语句查询参数
  *
- * Class QueryParamToSqlHelper
  * @package Shanjing\LaravelStatistics\Helper
  *
  * @author lou <lou@shanjing-inc.com>
@@ -74,9 +73,9 @@ class QueryParamToSqlHelper
     ) {
         $format = 'DATE_FORMAT';
         if ($dateColumnType === strval('TimeStamp')) {
-            $format = 'FROM_UNIXTIME';
+            $format         = 'FROM_UNIXTIME';
             $timezoneReview = intval($timezone) * 3600;
-            $dateColumnKey = $dateColumnKey . ' + ' . $timezoneReview;
+            $dateColumnKey  = $dateColumnKey . ' + ' . $timezoneReview;
         }
 
         switch ($period) {

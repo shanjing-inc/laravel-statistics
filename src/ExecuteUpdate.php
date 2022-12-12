@@ -14,7 +14,7 @@ class ExecuteUpdate
 
     public function __construct(string $key, array $data)
     {
-        $this->key = $key;
+        $this->key  = $key;
         $this->data = $data;
     }
 
@@ -45,10 +45,10 @@ class ExecuteUpdate
                 ));
         } else {
             return StatisticsModel::insert([
-                   'data'  => json_encode($this->data),
-                    'key'  => $this->key,
+                   'data'         => json_encode($this->data),
+                    'key'         => $this->key,
                     'occurred_at' => $this->occurredAt,
-                    'created_at' => now(),
+                    'created_at'  => now(),
                     'updated_at'  => now()
                 ]);
         }

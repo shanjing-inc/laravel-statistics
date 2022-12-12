@@ -3,7 +3,6 @@
 namespace  Shanjing\LaravelStatistics\Helper;
 
 /**
- * Class DateHelper
  * @package Shanjing\LaravelStatistics\Helper
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  *
@@ -28,7 +27,7 @@ class DateHelper
         if (null != $timeRange && sizeof($timeRange) > 0) {
             // 设定了时间范围
             $startTimeStamp = strtotime($timeRange[0]);
-            $endTimeStamp = strtotime($timeRange[1]);
+            $endTimeStamp   = strtotime($timeRange[1]);
             // 相差的年数数
             $yearGap = (date('Y', $endTimeStamp) - date('Y', $startTimeStamp)) + 1;
             if ($orderBy === strval('asc')) {
@@ -84,15 +83,15 @@ class DateHelper
         if (null != $timeRange && sizeof($timeRange) > 0) {
             // 设定了时间范围
             $startTimeStamp = strtotime($timeRange[0]);
-            $endTimeStamp = strtotime($timeRange[1]);
+            $endTimeStamp   = strtotime($timeRange[1]);
             // 相差的月数
             $monthGap = (date('Y', $endTimeStamp) - date('Y', $startTimeStamp)) * 12
                 + date('m', $endTimeStamp) - date('m', $startTimeStamp) + 1;
             $quarterGap = floor(($monthGap + 2) / 3);
             if ($orderBy === strval('asc')) {
                 for ($i = 0; $i < $quarterGap; $i++) {
-                    $year = date('Y', strtotime("+" . 3 * $i . " month", $startTimeStamp));
-                    $month = date('m', strtotime("+" . 3 * $i . " month", $startTimeStamp));
+                    $year       = date('Y', strtotime("+" . 3 * $i . " month", $startTimeStamp));
+                    $month      = date('m', strtotime("+" . 3 * $i . " month", $startTimeStamp));
                     $quarters[] = $year . '-' . floor(($month + 2) / 3);
                 }
                 // 处理结束节点
@@ -102,8 +101,8 @@ class DateHelper
                 }
             } else {
                 for ($i = 0; $i < $quarterGap; $i++) {
-                    $year = date('Y', strtotime("-" . 3 * $i . " month", $endTimeStamp));
-                    $month = date('m', strtotime("-" . 3 * $i . " month", $endTimeStamp));
+                    $year       = date('Y', strtotime("-" . 3 * $i . " month", $endTimeStamp));
+                    $month      = date('m', strtotime("-" . 3 * $i . " month", $endTimeStamp));
                     $quarters[] = $year . '-' . floor(($month + 2) / 3);
                 }
                 // 处理结束节点
@@ -118,14 +117,14 @@ class DateHelper
             if ($orderBy === strval('asc')) {
                 // 正序返回，为了包含当前日期的季度，需要 $i = 1 开始
                 for ($i = 1; $i <= $maxQuarters; $i++) {
-                    $year = date("Y", strtotime("-" . ($maxQuarters - $i) * 3 . "month"));
-                    $month = date("m", strtotime("-" . ($maxQuarters - $i) * 3 . "month"));
+                    $year       = date("Y", strtotime("-" . ($maxQuarters - $i) * 3 . "month"));
+                    $month      = date("m", strtotime("-" . ($maxQuarters - $i) * 3 . "month"));
                     $quarters[] = $year . '-' . floor(($month + 2) / 3);
                 }
             } else {
                 for ($i = 0; $i < $maxQuarters; $i++) {
-                    $year = date("Y", strtotime("-" . $i * 3 . "month"));
-                    $month = date("m", strtotime("-" . $i * 3 . "month"));
+                    $year       = date("Y", strtotime("-" . $i * 3 . "month"));
+                    $month      = date("m", strtotime("-" . $i * 3 . "month"));
                     $quarters[] = $year . '-' . floor(($month + 2) / 3);
                 }
             }
@@ -150,7 +149,7 @@ class DateHelper
         // 获取时间范围
         if (null != $timeRange && sizeof($timeRange) > 0) {
             $startTimeStamp = strtotime($timeRange[0]);
-            $endTimeStamp = strtotime($timeRange[1]);
+            $endTimeStamp   = strtotime($timeRange[1]);
             // 相差的月数
             $monthGap = (date('Y', $endTimeStamp) - date('Y', $startTimeStamp)) * 12
                 + date('m', $endTimeStamp) - date('m', $startTimeStamp) + 1;
@@ -207,9 +206,9 @@ class DateHelper
         if (null != $timeRange && sizeof($timeRange) > 0) {
             // 设定了时间范围
             $secondOfOneWeek = 604800;
-            $startTimeStamp = strtotime($timeRange[0]);
-            $endTimeStamp = strtotime($timeRange[1]);
-            $weekGap = floor(($endTimeStamp - $startTimeStamp) / $secondOfOneWeek) + 1;
+            $startTimeStamp  = strtotime($timeRange[0]);
+            $endTimeStamp    = strtotime($timeRange[1]);
+            $weekGap         = floor(($endTimeStamp - $startTimeStamp) / $secondOfOneWeek) + 1;
             if ($orderBy === strval('asc')) {
                 for ($i = 0; $i < $weekGap; $i++) {
                     $weeks[] = date('o-W', strtotime("+" . $i * 7 . " day", $startTimeStamp));
@@ -263,8 +262,8 @@ class DateHelper
             // 设定了时间范围
             $secondOfOneDay = 86400;
             $startTimeStamp = strtotime($timeRange[0]);
-            $endTimeStamp = strtotime($timeRange[1]);
-            $dayGap = floor(($endTimeStamp - $startTimeStamp) / $secondOfOneDay) + 1;
+            $endTimeStamp   = strtotime($timeRange[1]);
+            $dayGap         = floor(($endTimeStamp - $startTimeStamp) / $secondOfOneDay) + 1;
             if ($orderBy === strval('asc')) {
                 for ($i = 0; $i < $dayGap; $i++) {
                     $days[] = date('Y-m-d', strtotime("+" . $i . " day", $startTimeStamp));

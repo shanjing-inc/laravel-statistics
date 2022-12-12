@@ -5,7 +5,6 @@ namespace Shanjing\LaravelStatistics\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class Administrator.
  *
  * @property mixed key
  * @property mixed data

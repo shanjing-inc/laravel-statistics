@@ -31,25 +31,25 @@ trait Statistics
         $builder = parent::newEloquentBuilder($query);
 
         $builder->macro('period', function (Builder $builder, $period) {
-            $property = static::addPrefix('period');
+            $property        = static::addPrefix('period');
             $this->$property = QueryParamCorrectHelper::correctPeriod($period);
             return $builder;
         });
 
         $builder->macro('occurredAt', function (Builder $builder, $occurredAt) {
-            $property = static::addPrefix('occurredBetween');
+            $property        = static::addPrefix('occurredBetween');
             $this->$property = QueryParamCorrectHelper::correctOccurredAt($occurredAt);
             return $builder;
         });
 
         $builder->macro('occurredBetween', function (Builder $builder, $occurredBetween) {
-            $property = static::addPrefix('occurredBetween');
+            $property        = static::addPrefix('occurredBetween');
             $this->$property = QueryParamCorrectHelper::correctOccurredBetween($occurredBetween);
             return $builder;
         });
 
         $builder->macro('dateFieldInfo', function (Builder $builder, $dateFieldInfo) {
-            $property = static::addPrefix('dateFieldInfo');
+            $property        = static::addPrefix('dateFieldInfo');
             $this->$property = $dateFieldInfo;
             return $builder;
         });
@@ -61,11 +61,11 @@ trait Statistics
             $dateFieldInfoKey   = static::addPrefix('dateFieldInfo');
             $period             = $this->$periodKey ?? strval("day");
             $occurredBetween    = $this->$occurredBetweenKey ?? []; //
-            $dateFieldInfo    = $this->$dateFieldInfoKey
+            $dateFieldInfo      = $this->$dateFieldInfoKey
                 ?? ['dateField' => 'created_at', 'dateType' => 'DateTime', 'timezone' => '0'];
 
-            $dateField          = $dateFieldInfo['dateField'];
-            $selectFields       = QueryParamToSqlHelper::periodToSql(
+            $dateField    = $dateFieldInfo['dateField'];
+            $selectFields = QueryParamToSqlHelper::periodToSql(
                 $period,
                 $dateField,
                 $dateFieldInfo['dateType'],
@@ -87,7 +87,7 @@ trait Statistics
 
             // 处理排序问题，只支持按照 period 排序
             $orderBy = 'asc';
-            $orders = $builder->getQuery()->orders;
+            $orders  = $builder->getQuery()->orders;
             if ($orders == null) {
                 $builder->orderBy($period, $orderBy);
             } elseif (sizeof($orders) == intval(1)) {
@@ -125,7 +125,7 @@ trait Statistics
                         $occurredBetween,
                         $orderBy
                     );
-                    $ret->$key =  $processedData;
+                    $ret->$key = $processedData;
                 }
                 return $ret;
             }

@@ -8,7 +8,6 @@ namespace Shanjing\LaravelStatistics\Helper;
  * 1. 补足缺失的日期
  * 2. 查询的 null 结果，修改为 0， 方便展示统计数据
  *
- * Class QueryResultProcessHelper
  * @package Shanjing\LaravelStatistics\Helper
  *
  * @author lou <lou@shanjing-inc.com>

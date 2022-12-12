@@ -18,15 +18,15 @@ class StatisticsTablesSeeder extends Seeder
         // create a StatisticsModel.
         StatisticsModel::truncate();
         StatisticsModel::create([
-            'key' => 'taobao',
+            'key'  => 'taobao',
             'data' => json_encode([
-                'gmv'  => '1254',
+                'gmv'       => '1254',
                 'order_num' => '1420',
-                'money' => '4842.21'
+                'money'     => '4842.21'
             ]),
-            'occurred_at'  => '20210921',
-            'created_at'   => $now,
-            'updated_at'   => $now,
+            'occurred_at' => '20210921',
+            'created_at'  => $now,
+            'updated_at'  => $now,
         ]);
     }
 }

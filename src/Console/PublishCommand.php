@@ -139,7 +139,7 @@ class PublishCommand extends Command
     {
         $this->moveManagedFiles(new MountManager([
             'from' => new Flysystem(new LocalAdapter($from)),
-            'to' => new Flysystem(new LocalAdapter($to)),
+            'to'   => new Flysystem(new LocalAdapter($to)),
         ]));
 
         $this->status($from, $to, 'Directory');

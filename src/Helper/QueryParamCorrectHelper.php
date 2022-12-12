@@ -9,14 +9,12 @@ use Exception;
  *
  * 预处理请求参数，过滤不合规的参数
  *
- * Class QueryParamCorrectHelper
  * @package Shanjing\LaravelStatistics\Helper
  *
  * @author lou <lou@shanjing-inc.com>
  */
 class QueryParamCorrectHelper
 {
-
     /**
      * 格式化周期
      *
@@ -93,7 +91,7 @@ class QueryParamCorrectHelper
 
         // 是否是合法的时间
         $startTimeStamp = strtotime($occurredBetween[0]);
-        $endTimeStamp = strtotime($occurredBetween[1]);
+        $endTimeStamp   = strtotime($occurredBetween[1]);
         if (!ctype_digit($startTimeStamp) || !ctype_digit($endTimeStamp)) {
             throw new Exception("invalid occurredBetween date!");
         }

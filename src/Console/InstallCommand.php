@@ -50,9 +50,9 @@ class InstallCommand extends Command
         $this->call(
             'migrate',
             array(
-                '--path' => 'database/migrations/2021_09_22_083561_create_statistics_table.php',
+                '--path'     => 'database/migrations/2021_09_22_083561_create_statistics_table.php',
                 '--database' => config('statistics.database.connection') ?: config('database.default'),
-                '--force' => true)
+                '--force'    => true)
         );
     }
 }

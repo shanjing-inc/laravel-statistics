@@ -17,9 +17,9 @@ class ExecuteGet
 
     public function __construct(string $key, array $items)
     {
-        $this->key = $key;
-        $this->items = $items;
-        $this->period = 'day';
+        $this->key     = $key;
+        $this->items   = $items;
+        $this->period  = 'day';
         $this->orderBy = 'desc';
     }
 
