@@ -21,13 +21,14 @@ class QueryResultProcessHelper
      * @param $period - 周期 day | week | month | quarter | year
      * @param $occurredBetween - 时间范围 如 【20210901， 20210930】
      * @param $orderBy - 排序方式 desc | asc
+     * @param $fillValue - 当没有数据时，需要使用的填充数据
      * @param $items - 请求数据的 key，如 gmv | order_num, 用来说明哪些 item 需要补充 0
      * @return array
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      * @author lou <lou@shanjing-inc.com>
      */
-    public static function fillMissedDateAndChangeNullValueWithZero($data, $period, $occurredBetween, $orderBy)
+    public static function fillMissedDateAndChangeNullValueWithZero($data, $period, $occurredBetween, $orderBy, $fillValue)
     {
         switch ($period) {
             case strval('year'):
@@ -50,11 +51,6 @@ class QueryResultProcessHelper
         // 缺失日期补充 0 数据
         $dataFilledMissedData = [];
         if (null != $data && sizeof($data) > 0) {
-            // 填充数据
-            $fillValue = [];
-            foreach ($data[0]->getAttributes() as $key => $value) {
-                $fillValue[$key] = 0;
-            }
             //正在使用的 data 数据索引， 用来获取具体的日期对比参数， 来确定当天是否有数据
             $dataCursor = 0;
             // 遍历日期，补足不存在的日期

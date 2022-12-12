@@ -45,7 +45,7 @@ class ExecuteUpdate
                 ));
         } else {
             return StatisticsModel::insert([
-                   'data'         => json_encode($this->data),
+                    'data'        => json_encode($this->data),
                     'key'         => $this->key,
                     'occurred_at' => $this->occurredAt,
                     'created_at'  => now(),

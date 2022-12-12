@@ -57,13 +57,19 @@ class QueryResultProcessHelperTest extends TestCase
             ]
         ];
 
+        // 补足缺失日期时，使用的填充数据
+        $fillValue = [];
+        foreach ($data[0]->getAttributes() as $key => $value) {
+            $fillValue[$key] = 0;
+        }
         $this->assertSame(
             $expected,
             QueryResultProcessHelper::fillMissedDateAndChangeNullValueWithZero(
                 $data,
                 $period,
                 $occurredBetween,
-                $orderBy
+                $orderBy,
+                $fillValue
             )
         );
     }

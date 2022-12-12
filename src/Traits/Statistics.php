@@ -100,42 +100,72 @@ trait Statistics
 
             // 获取 groups
             $groups = $builder->getQuery()->groups;
-            if (sizeof($groups) > intval(2)) {
-                throw new Exception('can not support too many groupBys, the largest number is 2 !');
-            }
+            // if (sizeof($groups) > intval(2)) {
+            //     throw new Exception('can not support too many groupBys, the largest number is 2 !');
+            // }
 
             // 获取数据
             $data = $builder->get();
 
-            // 处理 2 次 groupBy 的情况，形成二维数组
-            if (sizeof($groups) === intval(2)) {
-                if ($groups[1] === $period) {
-                    unset($groups[1]);
+            // 补足缺失日期时，使用的填充数据
+            $fillValue = [];
+            foreach ($data[0]->getAttributes() as $key => $value) {
+                if (in_array($key, $groups) && $key != $period) {
+                    $fillValue[$key] = $value;
                 } else {
-                    unset($groups[0]);
+                    $fillValue[$key] = 0;
                 }
-                $groupData = $data->groupBy($groups[0]);
-
-                // 补足缺失日期
-                $ret = (object)[];
-                foreach ($groupData as $key => $item) {
-                    $processedData = QueryResultProcessHelper::fillMissedDateAndChangeNullValueWithZero(
-                        $item,
-                        $period,
-                        $occurredBetween,
-                        $orderBy
-                    );
-                    $ret->$key = $processedData;
-                }
-                return $ret;
             }
 
-            return QueryResultProcessHelper::fillMissedDateAndChangeNullValueWithZero(
-                $data,
-                $period,
-                $occurredBetween,
-                $orderBy
-            );
+            if (sizeof($groups) === intval(1)) {
+                // 补足缺失日期
+                return QueryResultProcessHelper::fillMissedDateAndChangeNullValueWithZero(
+                    $data,
+                    $period,
+                    $occurredBetween,
+                    $orderBy,
+                    $fillValue
+                );
+            }
+
+            // >= 2 次 groupBy, 二次 groupBy 的key
+            $regroupKey = '';
+            foreach ($groups as $group) {
+                if ($group != $period) {
+                    $regroupKey .= $group;
+                }
+            }
+
+            // >2 次 groupby 需要使用合并在一起的 key，降低格式的维度
+            if (sizeof($groups) > intval(2)) {
+                foreach ($data as $index => $item) {
+                    $implodedValue = '';
+                    foreach ($groups as $group) {
+                        if ($group != $period) {
+                            $implodedValue .= $item[$group];
+                        }
+                    }
+                    $data[$index][$regroupKey] = $implodedValue;
+                }
+            }
+
+            // 分组为 二维数据
+            $twoDdimensionalData = $data->groupBy($regroupKey);
+
+            // 补足缺失日期
+            $ret = (object)[];
+            foreach ($twoDdimensionalData as $key => $item) {
+                $fillValue[$regroupKey] = $item[0][$regroupKey];
+                $processedData          = QueryResultProcessHelper::fillMissedDateAndChangeNullValueWithZero(
+                    $item,
+                    $period,
+                    $occurredBetween,
+                    $orderBy,
+                    $fillValue
+                );
+                $ret->$key = $processedData;
+            }
+            return $ret;
         });
 
         return $builder;

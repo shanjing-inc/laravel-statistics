@@ -11,16 +11,14 @@ class ExecuteGet
 {
     protected $key;
     protected $items;
-    protected $period;
-    protected $orderBy;
+    protected $period  = 'day';
+    protected $orderBy = 'desc';
     protected $occurredBetween;
 
     public function __construct(string $key, array $items)
     {
-        $this->key     = $key;
-        $this->items   = $items;
-        $this->period  = 'day';
-        $this->orderBy = 'desc';
+        $this->key   = $key;
+        $this->items = $items;
     }
 
     /**
@@ -90,11 +88,17 @@ class ExecuteGet
             ->orderBy($this->period, $this->orderBy)
             ->get();
 
+        // 补足缺失日期时，使用的填充数据
+        $fillValue = [];
+        foreach ($data[0]->getAttributes() as $key => $attribute) {
+            $fillValue[$key] = 0;
+        }
         return QueryResultProcessHelper::fillMissedDateAndChangeNullValueWithZero(
             $data,
             $this->period,
             $this->occurredBetween,
-            $this->orderBy
+            $this->orderBy,
+            $fillValue
         );
     }
 }
