@@ -100,74 +100,174 @@ trait Statistics
 
             // 获取 groups
             $groups = $builder->getQuery()->groups;
-            // if (sizeof($groups) > intval(2)) {
-            //     throw new Exception('can not support too many groupBys, the largest number is 2 !');
-            // }
 
             // 获取数据
             $data = $builder->get();
 
-            // 补足缺失日期时，使用的填充数据
-            $fillValue = [];
-            foreach ($data[0]->getAttributes() as $key => $value) {
-                if (in_array($key, $groups) && $key != $period) {
-                    $fillValue[$key] = $value;
-                } else {
-                    $fillValue[$key] = 0;
-                }
-            }
-
+            // 只有一次 groupBy 的情况
             if (sizeof($groups) === intval(1)) {
-                // 补足缺失日期
-                return QueryResultProcessHelper::fillMissedDateAndChangeNullValueWithZero(
-                    $data,
-                    $period,
-                    $occurredBetween,
-                    $orderBy,
-                    $fillValue
-                );
+                return $this->processOneGroupByData($data, $groups, $period, $occurredBetween, $orderBy);
             }
 
-            // >= 2 次 groupBy, 二次 groupBy 的key
-            $regroupKey = '';
-            foreach ($groups as $group) {
-                if ($group != $period) {
-                    $regroupKey .= $group;
-                }
-            }
-
-            // >2 次 groupby 需要使用合并在一起的 key，降低格式的维度
-            if (sizeof($groups) > intval(2)) {
-                foreach ($data as $index => $item) {
-                    $implodedValue = '';
-                    foreach ($groups as $group) {
-                        if ($group != $period) {
-                            $implodedValue .= $item[$group];
-                        }
-                    }
-                    $data[$index][$regroupKey] = $implodedValue;
-                }
-            }
-
-            // 分组为 二维数据
-            $twoDdimensionalData = $data->groupBy($regroupKey);
-
-            // 补足缺失日期
-            $ret = (object)[];
-            foreach ($twoDdimensionalData as $key => $item) {
-                $fillValue[$regroupKey] = $item[0][$regroupKey];
-                $processedData          = QueryResultProcessHelper::fillMissedDateAndChangeNullValueWithZero(
-                    $item,
-                    $period,
-                    $occurredBetween,
-                    $orderBy,
-                    $fillValue
-                );
-                $ret->$key = $processedData;
-            }
-            return $ret;
+            // 大于两次 groupBy 的情况
+            return $this->processManyGroupByData($data, $groups, $period, $occurredBetween, $orderBy);
         });
 
         return $builder;
+    }
+
+
+
+    /**
+     * 只有 1 次 groupby 数据
+     *
+     * @param [type] $data
+     * @param [type] $groups
+     * @param [type] $period
+     * @param [type] $occurredBetween
+     * @param [type] $orderBy
+     * @return void
+     * @example
+     * @author lou@shanjing-inc.com
+     * @since 2022-12-13
+     */
+    private function processOneGroupByData($data, $groups, $period, $occurredBetween, $orderBy)
+    {
+        // 补足缺失日期
+        return QueryResultProcessHelper::fillMissedDateAndChangeNullValueWithZero(
+            $data,
+            $period,
+            $occurredBetween,
+            $orderBy,
+            $this->getFillItem($data[0], $groups, $period)
+        );
+    }
+
+    /**
+     * 大于 2 次 groupBy 的数据时，格式化成 二维数组返回
+     *
+     * @param [type] $data
+     * @param [type] $groups
+     * @param [type] $period
+     * @param [type] $occurredBetween
+     * @param [type] $orderBy
+     * @return void
+     * @example
+     * @author lou@shanjing-inc.com
+     * @since 2022-12-13
+     */
+    private function processManyGroupByData($data, $groups, $period, $occurredBetween, $orderBy)
+    {
+        // 分组使用的 key
+        $groupKey = $this->getGroupKey($groups, $period);
+        // 如果超过两次 groupBy， 重新处理数据
+        if (sizeof($groups) > intval(2)) {
+            $data = $this->addGroupKeyToData($data, $period, $groups, $groupKey);
+        }
+
+        // 使用 groupkey 格式化数据 [成二维数组]
+        $data = $data->groupBy($groupKey);
+
+        // 补足缺失日期
+        $ret = (object)[];
+        foreach ($data as $key => $value) {
+            // 补足缺失的日期
+            $resultArray = QueryResultProcessHelper::fillMissedDateAndChangeNullValueWithZero(
+                $value,
+                $period,
+                $occurredBetween,
+                $orderBy,
+                $this->getFillItem($value[0], $groups, $period, $groupKey)
+            );
+            $ret->$key = $resultArray;
+        }
+        return $ret;
+    }
+
+    /**
+     * 大于 2 次 groupby 时，需要使用一个 组合的 key，用于数据格式化，
+     * 所以在这里添加个 groupKey 和 groupValue 到数据中，用于后面的格式化
+     *
+     * @param [type] $data
+     * @param [type] $period
+     * @param [type] $groups
+     * @param [type] $regroupKey
+     * @example
+     * @author lou@shanjing-inc.com
+     * @since 2022-12-12
+     */
+    private function addGroupKeyToData($data, $period, $groups, $groupKey)
+    {
+        foreach ($data as $index => $item) {
+            $groupValue = '';
+            foreach ($groups as $group) {
+                if ($group != $period) {
+                    $groupValue .= '-' . $item[$group];
+                }
+            }
+            $data[$index][$groupKey] = $groupValue;
+        }
+
+        return $data;
+    }
+
+    /**
+     * 多次 groupBy 时，group 使用的 key
+     *
+     * @param [type] $groups
+     * @param [type] $period
+     * @return void
+     * @example
+     * @author lou@shanjing-inc.com
+     * @since 2022-12-13
+     */
+    private function getGroupKey($groups, $period)
+    {
+        $key = '';
+        // >2 次 groupby 需要使用合并在一起的 key，降低格式的维度
+        if (sizeof($groups) > intval(2)) {
+            foreach ($groups as $group) {
+                if ($group != $period) {
+                    $key .= $group;
+                }
+            }
+
+            return $key;
+        }
+
+        foreach ($groups as $group) {
+            if ($group != $period) {
+                $key = $group;
+            }
+        }
+        return $key;
+    }
+
+    /**
+     * 用来填充空白日期的数据
+     *
+     * @param [type] $exampleData
+     * @param [type] $groups
+     * @param [type] $period
+     * @param [type] $groupKey
+     * @return void
+     * @example
+     * @author lou@shanjing-inc.com
+     * @since 2022-12-13
+     */
+    private function getFillItem($exampleData, $groups, $period, $groupKey = null)
+    {
+        $fillValue = [];
+        foreach ($exampleData->getAttributes() as $k => $v) {
+            if (in_array($k, $groups) && $k != $period) {
+                $fillValue[$k] = $v;
+            } elseif ($k == $groupKey && $groupKey != null) {
+                $fillValue[$k] = $exampleData[$groupKey];
+            } else {
+                $fillValue[$k] = 0;
+            }
+        }
+
+        return $fillValue;
     }
 }
