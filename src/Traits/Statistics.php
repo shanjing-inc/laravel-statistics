@@ -103,6 +103,9 @@ trait Statistics
 
             // 获取数据
             $data = $builder->get();
+            if (sizeof($data) == 0) {
+                return $data;
+            }
 
             // 只有一次 groupBy 的情况
             if (sizeof($groups) === intval(1)) {
