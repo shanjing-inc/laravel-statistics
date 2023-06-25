@@ -39,7 +39,11 @@ class QueryParamToSqlHelper
         $where = '';
         // 时间范围
         if (is_array($occurredBetween) && sizeof($occurredBetween) >= intval(2)) {
-            $where = "(`$dateColumnKey` >= '$occurredBetween[0]' AND `$dateColumnKey` <= '$occurredBetween[1]')";
+            // 兼容联表时反引号格式
+            if (!str_contains($dateColumnKey, '`')) {
+                $dateColumnKey = "`$dateColumnKey`";
+            }
+            $where = "($dateColumnKey >= '$occurredBetween[0]' AND $dateColumnKey <= '$occurredBetween[1]')";
         }
 
         // key
