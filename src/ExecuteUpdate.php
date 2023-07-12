@@ -11,6 +11,7 @@ class ExecuteUpdate
     protected $key;
     protected $data;
     protected $occurredAt;
+    protected $amount = false;
 
     public function __construct(string $key, array $data)
     {
@@ -32,6 +33,12 @@ class ExecuteUpdate
         return $this;
     }
 
+    public function setAmount($amount = false)
+    {
+        $this->amount = (bool)$amount;
+        return $this;
+    }
+
     public function exec()
     {
         $model = StatisticsModel::whereRaw($this->getWhereRaw())
@@ -40,7 +47,7 @@ class ExecuteUpdate
         if (null != $model) {
             return StatisticsModel::where('id', $model->id)
                 ->update(array_merge(
-                    $this->getFormattedData($this->data),
+                    $this->getFormattedData($model->data, $this->data),
                     ['updated_at' => now()]
                 ));
         } else {
@@ -94,12 +101,24 @@ class ExecuteUpdate
      *
      * @author lou <lou@shanjing-inc.com>
      */
-    private function getFormattedData($data)
+    private function getFormattedData($originData, $data)
     {
         if ($data == null || sizeof($data) == 0) {
             throw new Exception('There is no data to save!');
         }
 
-        return ArrayHelper::arrow(['data' => $data]);
+        $data = ArrayHelper::arrow($data);
+        if (!$this->amount) {
+            return $data;
+        }
+
+        $originData = ArrayHelper::arrow($originData);
+        foreach ($originData as $key => $num) {
+            if (isset($data[$key])) {
+                $data[$key] += $num;
+            }
+        }
+
+        return array_merge($originData, $data);
     }
 }
