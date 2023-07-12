@@ -47,15 +47,72 @@ class ExecuteUpdateTest extends TestCase
         );
         $reflectedMethod->setAccessible(true);
 
-        //
-        $expected = [
-            "data->key1" => "value1",
-            "data->key2" => "value2"
+        $originData = [
+            'foo' => [
+                'bar' => 1,
+                'baz' => 2,
+            ],
+            'qux' => 3,
         ];
-        $executeUpdate = new ExecuteUpdate('test', ['item' => 'value']);
+
+        $data = [
+            'foo' => [
+                'bar' => 4,
+                'quux' => 5,
+            ],
+            'corge' => 6,
+        ];
+
+        $expectedResult = [
+            'foo->bar' => 5,
+            'foo->baz' => 2,
+            'qux' => 3,
+            'foo->quux' => 5,
+            'corge' => 6,
+        ];
+        $executeUpdate = new ExecuteUpdate('test', $data);
+        $executeUpdate->setAmount(true);
         $this->assertSame(
-            $expected,
-            $reflectedMethod->invoke($executeUpdate, ['key1' => 'value1', 'key2' => 'value2'])
+            $expectedResult,
+            $reflectedMethod->invoke($executeUpdate, $originData, $data)
+        );
+    }
+
+    public function testGetFormattedDataWithoutAmount()
+    {
+        // 反射
+        $reflectedMethod = new ReflectionMethod(
+            'Shanjing\LaravelStatistics\ExecuteUpdate',
+            'getFormattedData'
+        );
+        $reflectedMethod->setAccessible(true);
+
+        $originData = [
+            'foo' => [
+                'bar' => 1,
+                'baz' => 2,
+            ],
+            'qux' => 3,
+        ];
+
+        $data = [
+            'foo' => [
+                'bar' => 4,
+                'quux' => 5,
+            ],
+            'corge' => 6,
+        ];
+
+        $expectedResult = [
+            'foo->bar' => 4,
+            'foo->quux' => 5,
+            'corge' => 6,
+        ];
+        $executeUpdate = new ExecuteUpdate('test', $data);
+        $executeUpdate->setAmount(false);
+        $this->assertSame(
+            $expectedResult,
+            $reflectedMethod->invoke($executeUpdate, $originData, $data)
         );
     }
 }
