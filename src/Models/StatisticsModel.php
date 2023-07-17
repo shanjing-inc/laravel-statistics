@@ -15,6 +15,10 @@ class StatisticsModel extends Model
 {
     protected $fillable = ['key', 'data', 'occurred_at'];
 
+    protected $casts = [
+        'data' => 'array',
+    ];
+
     /**
      * Create a new Eloquent model instance.
      *
