@@ -46,18 +46,18 @@ class ExecuteUpdate
 
         if (null != $model) {
             return StatisticsModel::where('id', $model->id)
-                ->update(array_merge(
-                    $this->getFormattedData($model->data, $this->data),
-                    ['updated_at' => now()]
-                ));
-        } else {
-            return StatisticsModel::insert([
-                    'data'        => json_encode($this->data),
-                    'key'         => $this->key,
-                    'occurred_at' => $this->occurredAt,
-                    'created_at'  => now(),
-                    'updated_at'  => now()
+                ->update([
+                    'data' => $this->getFormattedData($model->data, $this->data),
+                    'updated_at' => now()
                 ]);
+        } else {
+            return StatisticsModel::create([
+                'data'        => $this->data,
+                'key'         => $this->key,
+                'occurred_at' => $this->occurredAt,
+                'created_at'  => now(),
+                'updated_at'  => now()
+            ]);
         }
     }
 
