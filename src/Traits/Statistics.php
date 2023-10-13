@@ -94,6 +94,9 @@ trait Statistics
                 if ($orders[0]['column'] != $period) {
                     throw new Exception('orderBy column error, orderBy column should same as period');
                 }
+                if (strtolower($orders[0]['direction']) === 'desc') {
+                    $orderBy = 'desc';
+                }
             } else {
                 throw new Exception('orderBy column error, too many orderBy');
             }
